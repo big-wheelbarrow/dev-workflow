@@ -1,8 +1,8 @@
 require 'formula'
 
 class PingboardWorkflow < Formula
-  homepage 'https://github.com/pingboard/git-pivotal-workflow'
-  head 'https://github.com/pingboard/git-pivotal-workflow.git'
+  homepage 'https://github.com/pingboard/dev-workflow'
+  head 'https://github.com/pingboard/dev-workflow.git'
 
   depends_on 'git-flow-avh'
   depends_on 'pivotal-tracker' => :ruby
