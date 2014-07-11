@@ -2,7 +2,7 @@ require 'formula'
 
 class PingboardWorkflow < Formula
   homepage 'https://github.com/pingboard/git-pivotal-workflow'
-  url 'https://github.com/pingboard/git-pivotal-workflow.git', :using => :git
+  head 'https://github.com/pingboard/git-pivotal-workflow.git'
 
   depends_on 'git-flow-avh'
   depends_on 'pivotal-tracker' => :ruby
@@ -21,7 +21,7 @@ class PingboardWorkflow < Formula
 
       Next system link the .git/hooks directory in your Pingboard code base.
 
-        ln -s #{opt_prefix}/hooks CODBASE_PATH/pingboard/.git/hooks
+        ln -s #{opt_prefix}/share/hooks CODBASE_PATH/pingboard/.git/hooks
     EOS
   end
 end
