@@ -9,6 +9,7 @@ class PingboardWorkflow < Formula
   
   def install
     bin.install 'git-pivotal'
+    share.install 'hooks'
   end
 
   def caveats
@@ -16,9 +17,7 @@ class PingboardWorkflow < Formula
       Add your personal pivotal token and the Pingboard project id to the git config
 
         git config --add pivotal.token PIVOTAL_TOKEN
-        git config --add pivotal.token PIVOTAL_TOKEN
         git config --add pivotal.project-id PIVOTAL_PROJECT_ID
-
 
       Next system link the .git/hooks directory in your Pingboard code base.
 
