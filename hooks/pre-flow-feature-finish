@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+#
+# Runs at the end of git flow feature finish
+#
+#!/bin/sh
+#
+# Runs before git flow feature finish
+#
+# Positional arguments:
+# $1    The friendly name of the branch
+# $2    The origin remote
+# $3    The full branch name (including the feature prefix)
+#
+# The following variables are available as they are exported by git-flow:
+#
+# MASTER_BRANCH - The branch defined as Master
+# DEVELOP_BRANCH - The branch defined as Develop
+#
+name = ARGV[0]
+origin = ARGV[1]
+branch = ARGV[2]
+tracker_id = $1 if branch =~ /(\d+)$/
+commit_msg = `git log #{branch} -1 --pretty=%s`
+
+commit_msg.gsub!("[##{tracker_id}]", "[Finishes ##{tracker_id}]")
+
+`git commit --amend -m '#{commit_msg}'`
+
+exit

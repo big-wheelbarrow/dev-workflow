@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+# gem 'pivotal-tracker'
+require 'pivotal-tracker'
+
+TRACKER_TOKEN = `git config --get pivotal.token`
+TRACKER_PROJECT_ID = `git config --get pivotal.project-id`
+USER = `git config user.name`
+
+PivotalTracker::Client.token = TRACKER_TOKEN
+PivotalTracker::Client.use_ssl = true
+
+def truncate_words(text, length = 7)
+  return if text == nil
+  words = text.split()
+  words = words - %w(feature scenario for in on a an the of so that they be able to are it its with let add create apply) #remove non critical words (experiment with this)
+  words[0..(length-1)].join(' ')
+end
+
+project = PivotalTracker::Project.find TRACKER_PROJECT_ID
+conditions = {:state => ["rejected", "started", "unstarted", "finished", "unscheduled"], owned_by: USER}
+projects = project.stories.all(conditions)
+
+if projects.count > 0
+  branches = []
+  projects.first(20).each_with_index do |story, index|
+    name = story.name.downcase
+    # remove individual offending chars: single quote, double quote, open
+    # paren, close paren, colon, backslash, forwardslash and replace with
+    # an empty string (aka nothing)
+    name.gsub!(/['"\.\(\):\\\/]/,"")
+    # remove remaining cl.ly links
+    name.gsub!(/httpclly\S*/,"")
+    # remove dash and replace with space
+    name.gsub!(/-/," ")
+    # do the truncate here, after all the removal & before the _ injection
+    name = truncate_words(name)
+    # replace all instances of one or more spaces with _
+    name.gsub!(/\s+/,"_")
+    # create final display
+    display = "#{name}_#{story.id}"
+    branches[index + 1] = "#{display}"
+    puts "(#{index + 1}) #{display}"
+  end
+
+  puts ""
+  puts "(0) EXIT WITHOUT ANY ACTION"
+  puts ""
+  puts "For which story do you want to create a new git feature branch?"
+  puts "    Note: type 1,hotfix to create a hotfix for the first story"
+
+  input = STDIN.gets.strip
+  story_num = input.split(",")[0].to_i
+  story_type = input.split(",")[1]
+  story_type ||= "feature"
+
+  if (1..projects.count).include?(story_num)
+    `git flow #{story_type} start "#{branches[story_num]}"`
+
+    if $?.exitstatus.zero?
+      puts ""
+      puts "Summary of actions:"
+      puts "- A new branch '#{story_type}/#{branches[story_num]}' was created, based on '#{story_type == 'feature' ? 'develop' : 'master'}'"
+      puts "- You are now on branch '#{story_type}/#{branches[story_num]}'"
+      puts ""
+      puts "Now, start committing on your #{story_type}. When done, use:"
+      puts ""
+      puts "     git flow #{story_type} finish #{branches[story_num]}"
+      puts ""
+    else
+      puts "\n There was a problem creating your branch, please read the error above to fix it."
+    end
+  else
+    exit
+  end
+else
+  puts "There are no available stories right now!"
+end

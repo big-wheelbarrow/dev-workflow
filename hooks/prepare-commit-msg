@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+require 'tempfile'
+
+commit_msg_file = ARGV[0]
+current_branch = `git rev-parse --abbrev-ref HEAD`
+tracker_id = $1 if current_branch =~ /(\d+)$/
+
+if tracker_id
+  commit_msg = File.open(commit_msg_file, "r") { |f| f.read }
+
+  unless commit_msg =~ /\[\w*\s*#\d+\]/
+    File.open(commit_msg_file, 'w') {|f| f.write("[##{tracker_id}] #{commit_msg}") }
+  end
+end
+
+exit
