@@ -6,6 +6,10 @@ class PingboardWorkflow < Formula
 
   depends_on 'git-flow-avh'
   depends_on 'pivotal-tracker' => :ruby
+  depends_on 'phantomjs'
+  depends_on 'postgresql'
+  depends_on 'redis'
+  depends_on 'elasticsearch'
   
   def install
     bin.install 'git-pivotal'
