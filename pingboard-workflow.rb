@@ -10,6 +10,7 @@ class PingboardWorkflow < Formula
   depends_on 'postgresql'
   depends_on 'redis'
   depends_on 'elasticsearch'
+  depends_on 'overcommit'
   
   def install
     bin.install 'git-pivotal'
